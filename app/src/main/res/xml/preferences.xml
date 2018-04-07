@@ -1,0 +1,76 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/Settings" />
+
+    <SwitchPreference
+        android:key="keepTheScreenOn"
+        android:title="@string/Display"
+        android:summary="@string/KeepTheDisplayOn"/>
+
+    <SwitchPreference
+        android:key="useCustomWord"
+        android:title="@string/UseCustomWord"
+        android:summary="@string/UseCustomWordMode"/>
+
+    <EditTextPreference
+        android:key="customWord"
+        android:dependency="useCustomWord"
+        android:title="@string/CustomWord"
+        android:summary="@string/NoWordChosen"
+        android:dialogTitle="@string/ChooseAWord"
+        android:dialogIcon="@mipmap/ic_launcher"/>
+
+    <PreferenceCategory
+        android:title="@string/About" />
+
+    <Preference
+        android:title="@string/Development"
+        android:summary="@string/Aspectsense">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://aspectsense.com" />
+    </Preference>
+
+    <Preference
+        android:key="rateTheApp"
+        android:title="@string/LikedTheApp"
+        android:summary="@string/RateTheApp"/>
+
+    <Preference
+        android:key="shareTheApp"
+        android:title="@string/Share"
+        android:summary="@string/TellYourFriends"/>
+
+    <PreferenceCategory
+        android:title="@string/Attributions" />
+
+    <Preference
+        android:capitalize="words"
+        android:inputType="textCapWords"
+        android:key="example_text"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Bubble sound"
+        android:summary="Recorded by Mike Koenig">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://soundbible.com/1137-Bubbles.html" />
+    </Preference>
+
+    <Preference
+        android:capitalize="words"
+        android:inputType="textCapWords"
+        android:key="example_text"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Transparent Snorkel Mask Clipart"
+        android:summary="Gallery Yopriceille">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://gallery.yopriceville.com/Free-Clipart-Pictures/Summer-Vacation-PNG/Transparent_Snorkel_Mask_Clipart#.WsS8QIhuaUk" />
+    </Preference>
+
+</PreferenceScreen>

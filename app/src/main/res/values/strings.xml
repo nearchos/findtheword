@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">Βρες τη Λέξη</string>
+    <string name="Easy">Ευκολο</string>
+    <string name="Medium">Μεσαιο</string>
+    <string name="Hard">Δυσκολο</string>
+    <string name="Swimmer">Swimmer</string>
+    <string name="Confirm_reset_message">Σίγουρα θες να ξαναρχίσεις;</string>
+    <string name="Yes">Ναί</string>
+    <string name="No">Όχι</string>
+    <string name="MuteUnmute">Ενεργοποίησε ή απενεργοποίησε την μουσική</string>
+    <string name="Settings">Ρυθμίσεις</string>
+    <string name="Display">Οθόνη</string>
+    <string name="KeepTheDisplayOn">Να μένει ανοικτή η οθόνη</string>
+    <string name="About">Σχετικά</string>
+    <string name="UseCustomWord">Επιλογή δικής σας λέξη</string>
+    <string name="UseCustomWordMode">Η μυστική λέξη θα είναι δικής σας επιλογής</string>
+    <string name="CustomWord">Δική σας λέξη</string>
+    <string name="NoWordChosen">Δεν εχετε επιλέξει</string>
+    <string name="ChooseAWord">Επιλέξτε μια έγκυρη, ελληνική λέξη</string>
+    <string name="Development">Ανάπτυξη</string>
+    <string name="Aspectsense">aspectsense.com</string>
+    <string name="LikedTheApp">Σας άρεσε η εφαρμογή;</string>
+    <string name="RateTheApp">Βαθμολογείστε μας</string>
+    <string name="Share">Μοιραστείτε το</string>
+    <string name="TellYourFriends">Πέστε στους φίλους σας για την εφαρμογή</string>
+    <string name="ShareMessage">Παίξτε \'Βρες τη λέξη\' στο Android σας!</string>
+    <string name="Attributions">Ευχαριστίες</string>
+
+    <string name="alpha">Α</string>
+    <string name="beta">Β</string>
+    <string name="gamma">Γ</string>
+    <string name="delta">Δ</string>
+    <string name="epsilon">Ε</string>
+    <string name="zita">Ζ</string>
+    <string name="eta">Η</string>
+    <string name="theta">Θ</string>
+    <string name="giota">Ι</string>
+    <string name="kappa">Κ</string>
+    <string name="lambda">Λ</string>
+    <string name="mi">Μ</string>
+    <string name="ni">Ν</string>
+    <string name="ksi">Ξ</string>
+    <string name="omikron">Ο</string>
+    <string name="pi">Π</string>
+    <string name="rho">Ρ</string>
+    <string name="sigma">Σ</string>
+    <string name="tau">Τ</string>
+    <string name="ypsilon">Υ</string>
+    <string name="phi">Φ</string>
+    <string name="chi">Χ</string>
+    <string name="psi">Ψ</string>
+    <string name="omega">Ω</string>
+
+</resources>

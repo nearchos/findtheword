@@ -1,7 +1,7 @@
 # findtheword
-A simple hangman-style app, friendly for kids (in Greek only)
+A simple hangman-style app, friendly for kids (in Greek only).
 
-Μια ηλεκτρονική διασκευή του παιχνιδιού 'κρεμάλα' κατάλληλη για παιδιά (μόνο στα Ελληνικά)
+Μια ηλεκτρονική διασκευή του παιχνιδιού 'κρεμάλα', κατάλληλη για παιδιά (μόνο στα Ελληνικά).
 
 Get it from [Google Play](https://play.google.com/store/apps/details?id=io.github.nearchos.findtheword).
 

@@ -2,18 +2,21 @@ package io.github.nearchos.findtheword;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,6 +57,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE); //Remove title bar
+        final boolean keepScreenOn = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("keepTheScreenOn", false);
+        if(keepScreenOn) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
         easyButton = findViewById(R.id.easyButton);
@@ -97,21 +102,21 @@ public class MainActivity extends Activity {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.app_name)
                     .setMessage(R.string.Confirm_reset_message)
-                    .setPositiveButton(R.string.Yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            resetGameState();
-                        }
-                    })
-                    .setNegativeButton(R.string.No, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .setPositiveButton(R.string.Yes, (dialog, which) -> resetGameState())
+                    .setNegativeButton(R.string.No, (dialog, which) -> dialog.dismiss())
                     .create()
                     .show();
         }
+    }
+
+    private void showDialogLost() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.app_name)
+                .setMessage(getString(R.string.Lost_message, selectedWord.toUpperCase()))
+                .setPositiveButton(R.string.Reset, (dialog, which) -> resetGameState())
+                .setNegativeButton(R.string.Ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
 
     private void resetGameState() {
@@ -236,6 +241,8 @@ public class MainActivity extends Activity {
             case LOST:
                 // play lost sound
                 if(!mute) bubblesMediaPlayer.start();
+                // show dialog
+                showDialogLost();
                 break;
             case ACTIVE:
                 // play key sound
@@ -362,11 +369,15 @@ public class MainActivity extends Activity {
         muteUnmuteButton.setImageResource(mute ? R.drawable.ic_volume_off_black_24dp : R.drawable.ic_volume_up_black_24dp);
     }
 
-    private Vector<String> getWordsFromAssets(final String filename) {
+    Vector<String> getWordsFromAssets(final String filename) {
+        return getWordsFromAssets(this, filename);
+    }
+
+    static Vector<String> getWordsFromAssets(final Context context, final String filename) {
         final Vector<String> words = new Vector<>();
         BufferedReader bufferedReader = null;
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(getAssets().open(filename), "UTF-8"));
+            bufferedReader = new BufferedReader(new InputStreamReader(context.getAssets().open(filename), "UTF-8"));
 
             // do reading, usually loop until end of file reading
             String word;

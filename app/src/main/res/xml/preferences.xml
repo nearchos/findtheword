@@ -21,12 +21,18 @@
         android:dialogTitle="@string/ChooseAWord"
         android:dialogIcon="@mipmap/ic_launcher"/>
 
+    <Preference
+        android:key="statistics"
+        android:title="@string/Statistics"
+        android:summary="@string/NumOfWords"/>
+
     <PreferenceCategory
         android:title="@string/About" />
 
     <Preference
+        android:key="developmentDetails"
         android:title="@string/Development"
-        android:summary="@string/Aspectsense">
+        android:summary="@string/DevelopedBy">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="http://aspectsense.com" />

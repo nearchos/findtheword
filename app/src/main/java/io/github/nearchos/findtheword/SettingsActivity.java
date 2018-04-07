@@ -12,7 +12,6 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ShareCompat;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
@@ -61,9 +60,27 @@ public class SettingsActivity extends Activity {
                 return true;
             });
             final Preference rateTheAppPreference = getPreferenceManager().findPreference("rateTheApp");
-            if(rateTheAppPreference != null) rateTheAppPreference.setOnPreferenceClickListener(preference -> rateTheApp(getActivity()));
+            assert rateTheAppPreference != null;
+            rateTheAppPreference.setOnPreferenceClickListener(preference -> rateTheApp(getActivity()));
             final Preference shareTheAppPreference = getPreferenceManager().findPreference("shareTheApp");
-            if(shareTheAppPreference != null) shareTheAppPreference.setOnPreferenceClickListener(preference -> shareTheApp(getActivity()));
+            assert shareTheAppPreference != null;
+            shareTheAppPreference.setOnPreferenceClickListener(preference -> shareTheApp(getActivity()));
+
+            final int numOfEasyWords = MainActivity.getWordsFromAssets(getActivity(), "easy.txt").size();
+            final int numOfMediumWords = MainActivity.getWordsFromAssets(getActivity(), "medium.txt").size();
+            final int numOfHardWords = MainActivity.getWordsFromAssets(getActivity(), "hard.txt").size();
+            final int totalNumOfWords = numOfEasyWords + numOfMediumWords + numOfHardWords;
+            final Preference statisticsPreference = getPreferenceManager().findPreference("statistics");
+            assert statisticsPreference != null;
+            statisticsPreference.setSummary(getString(R.string.NumOfWords, totalNumOfWords));
+            statisticsPreference.setOnPreferenceClickListener(preference -> {
+                Toast.makeText(getActivity(), getString(R.string.NumOfWordsByCategory, numOfEasyWords, numOfMediumWords, numOfHardWords), Toast.LENGTH_LONG).show();
+                return true;
+            });
+
+            final Preference developmentDetailsPreference = getPreferenceManager().findPreference("developmentDetails");
+            assert developmentDetailsPreference != null;
+            developmentDetailsPreference.setSummary(getString(R.string.DevelopedBy, BuildConfig.VERSION_NAME));
         }
     }
 
@@ -77,7 +94,7 @@ public class SettingsActivity extends Activity {
 
     private static boolean rateTheApp(final Context context) {
         final Uri uri = Uri.parse("market://details?id=" + context.getPackageName());
-        Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        final Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
         // To count with Play market backstack, After pressing back button,
         // to taken back to our application, we need to add following flags to intent.
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);

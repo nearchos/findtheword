@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--these are samples - see: https://developers.google.com/admob/android/test-ads -->
+    <string name="ADMOB_APP_ID">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="ADMOB_AD_UNIT_ID">ca-app-pub-3940256099942544/6300978111</string>
+</resources>

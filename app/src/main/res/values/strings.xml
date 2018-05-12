@@ -24,13 +24,17 @@
     <string name="TellYourFriends">Πέστε στους φίλους σας για την εφαρμογή</string>
     <string name="ShareMessage">Παίξτε \'Βρες τη λέξη\' στο Android σας!</string>
     <string name="Attributions">Ευχαριστίες</string>
-    <string name="Lost_message">Λυπάμαι, έχασες.\nΗ λέξη είναι \'%1$s\'.</string>
+    <!--<string name="Lost_message">Λυπάμαι, έχασες.\nΗ λέξη είναι \'%1$s\'.</string>-->
+    <string name="Lost_message">Λυπάμαι, έχασες. Η λέξη είναι</string>
+    <string name="Won_message">Μπράβο, βρήκες τη λέξη!</string>
     <string name="Reset">Ξανάρχισε</string>
     <string name="Ok">Οκ</string>
     <string name="Statistics">Statistics</string>
     <string name="NumOfWords">Περιλαμβάνει %1$d λέξεις</string>
     <string name="NumOfWordsByCategory">Περιλαμβάνει %1$d εύκολες, %2$d μεσαίες και %3$d δύσκολες λέξεις</string>
     <string name="DevelopedBy">Ανάπτυξη από aspectsense.com - Έκδοση %1$s</string>
+    <string name="Etymology">Ετυμολογία</string>
+    <string name="EtymologyUrl">https://el.wiktionary.org/wiki/%1$s</string>
 
     <string name="alpha">Α</string>
     <string name="beta">Β</string>

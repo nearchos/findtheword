@@ -52,31 +52,27 @@
         android:title="@string/Attributions" />
 
     <Preference
-        android:capitalize="words"
-        android:inputType="textCapWords"
-        android:key="example_text"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="Bubble sound"
-        android:summary="Recorded by Mike Koenig">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="http://soundbible.com/1137-Bubbles.html" />
-    </Preference>
-
-    <Preference
-        android:capitalize="words"
-        android:inputType="textCapWords"
-        android:key="example_text"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
         android:title="Transparent Snorkel Mask Clipart"
         android:summary="Gallery Yopriceille">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://gallery.yopriceville.com/Free-Clipart-Pictures/Summer-Vacation-PNG/Transparent_Snorkel_Mask_Clipart#.WsS8QIhuaUk" />
+    </Preference>
+
+    <Preference
+        android:title="Miscellaneous audio effects"
+        android:summary="J-Sinn on the Sounds Resource">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://www.sounds-resource.com/nes/bubblebobble/sound/3719/" />
+    </Preference>
+
+    <Preference
+        android:title="Bubbles sound"
+        android:summary="Mike Koenig on the Soundbible">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://soundbible.com/1137-Bubbles.html" />
     </Preference>
 
 </PreferenceScreen>

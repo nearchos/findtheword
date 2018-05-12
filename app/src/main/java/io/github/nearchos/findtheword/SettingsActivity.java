@@ -10,13 +10,17 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
+
+    public static final String TAG = "find-the-word";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,19 +30,25 @@ public class SettingsActivity extends Activity {
         if(actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         // load settings fragment
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, new MainPreferenceFragment())
+                .commit();
     }
 
     public static class MainPreferenceFragment extends PreferenceFragment {
+
+        private SwitchPreference customWordSwitchPreference;
+        private EditTextPreference customWordEditTextPreference;
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
 
-            final SwitchPreference customWordSwitchPreference = (SwitchPreference) getPreferenceManager().findPreference("useCustomWord");
+            customWordSwitchPreference = (SwitchPreference) getPreferenceManager().findPreference("useCustomWord");
             assert customWordSwitchPreference != null;
-            final EditTextPreference customWordEditTextPreference = (EditTextPreference) getPreferenceManager().findPreference("customWord");
+            customWordEditTextPreference = (EditTextPreference) getPreferenceManager().findPreference("customWord");
             assert customWordEditTextPreference != null;
             customWordEditTextPreference.setOnPreferenceChangeListener((preference, newValue) -> {
                 // check word
@@ -81,6 +91,15 @@ public class SettingsActivity extends Activity {
             final Preference developmentDetailsPreference = getPreferenceManager().findPreference("developmentDetails");
             assert developmentDetailsPreference != null;
             developmentDetailsPreference.setSummary(getString(R.string.DevelopedBy, BuildConfig.VERSION_NAME));
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            final String initialCustomWord = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("customWord", getActivity().getString(R.string.NoWordChosen));
+            customWordEditTextPreference.setSummary(initialCustomWord);
+            Log.d(TAG, "initialCustomWord: " + initialCustomWord);
         }
     }
 

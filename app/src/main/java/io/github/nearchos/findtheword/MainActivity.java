@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,7 +19,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +33,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 public class MainActivity extends Activity {
 
@@ -46,8 +56,6 @@ public class MainActivity extends Activity {
     private ImageView swimmerImageView;
     private TextView textView;
 
-    private boolean [] letters = new boolean[25]; // 25 and not 24 because sigma has 2 versions so omega is 25th
-
     private MediaPlayer correctMediaPlayer;
     private MediaPlayer wrongMediaPlayer;
     private MediaPlayer winMediaPlayer;
@@ -60,6 +68,12 @@ public class MainActivity extends Activity {
         final boolean keepScreenOn = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("keepTheScreenOn", false);
         if(keepScreenOn) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
+
+        // init and load ad
+        MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
+        AdRequest adRequest = new AdRequest.Builder().build();
+        final AdView adView = findViewById(R.id.adView);
+        adView.loadAd(adRequest);
 
         easyButton = findViewById(R.id.easyButton);
         mediumButton = findViewById(R.id.mediumButton);
@@ -75,8 +89,12 @@ public class MainActivity extends Activity {
         bubblesMediaPlayer = MediaPlayer.create(this, R.raw.bubbles);
     }
 
+    private boolean [] letters = new boolean[25]; // 25 and not 24 because sigma has 2 versions so omega is 25th
+    private String unsanitizedSelectedWord;
     private String selectedWord;
     private String word = "";
+    private WaterLevel currentWaterLevel = WaterLevel.L0;
+    private boolean letterTouched = false;
 
     @Override
     protected void onStart() {
@@ -91,8 +109,40 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        mute = getPreferences(MODE_PRIVATE).getBoolean("mute", true);
-        updateMuteIcon(mute);
+        updateMuteIcon(isMute());
+
+//        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        try {
+//            final String jsonBooleanArray = sharedPreferences.getString("letters", "");
+//            final JSONArray jsonArray = new JSONArray(jsonBooleanArray);
+//            for(int i = 0; i < jsonArray.length(); i++) {
+//                letters[i] = jsonArray.getBoolean(i);
+//            }
+//        } catch (JSONException jsone) {
+//            Log.e(TAG, jsone.getMessage(), jsone);
+//        }
+//
+//        unsanitizedSelectedWord = sharedPreferences.getString("unsanitizedSelectedWord", "");
+//        selectedWord = sharedPreferences.getString("selectedWord", "");
+//        word = sharedPreferences.getString("word", "");
+//        currentWaterLevel = WaterLevel.valueOf(sharedPreferences.getString("currentWaterLevel", "L0"));
+//        letterTouched = sharedPreferences.getBoolean("letterTouched", false);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+//        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        final String jsonBooleanArray = Arrays.toString(letters);
+//        sharedPreferences.edit()
+//                .putString("letters", jsonBooleanArray)
+//                .putString("unsanitizedSelectedWord", unsanitizedSelectedWord)
+//                .putString("selectedWord", selectedWord)
+//                .putString("word", word)
+//                .putString("currentWaterLevel", currentWaterLevel.name())
+//                .putBoolean("letterTouched", letterTouched)
+//                .apply();
     }
 
     public void showDialogStartNewGame(final View view) {
@@ -109,10 +159,28 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void showDialogLost() {
+    private void showDialogWon() {
+        final View wonView = LayoutInflater.from(this).inflate(R.layout.won_view, null);
+        ((TextView) wonView.findViewById(R.id.won_view_word_upper_case)).setText(selectedWord); // sanitized view (upper case, no accents)
+        ((TextView) wonView.findViewById(R.id.won_view_word_lower_case)).setText(unsanitizedSelectedWord); // unsanitized view, lower case
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.app_name)
-                .setMessage(getString(R.string.Lost_message, selectedWord.toUpperCase()))
+                .setView(wonView)
+                .setNeutralButton(R.string.Etymology, (dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.EtymologyUrl, unsanitizedSelectedWord.toLowerCase())))))
+                .setPositiveButton(R.string.Reset, (dialog, which) -> resetGameState())
+                .setNegativeButton(R.string.Ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    private void showDialogLost() {
+        final View lostView = LayoutInflater.from(this).inflate(R.layout.lost_view, null);
+        ((TextView) lostView.findViewById(R.id.lost_view_word_upper_case)).setText(selectedWord); // sanitized view (upper case, no accents)
+        ((TextView) lostView.findViewById(R.id.lost_view_word_lower_case)).setText(unsanitizedSelectedWord); // unsanitized view, lower case
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.app_name)
+                .setView(lostView)
+                .setNeutralButton(R.string.Etymology, (dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.EtymologyUrl, unsanitizedSelectedWord.toLowerCase())))))
                 .setPositiveButton(R.string.Reset, (dialog, which) -> resetGameState())
                 .setNegativeButton(R.string.Ok, (dialog, which) -> dialog.dismiss())
                 .create()
@@ -131,20 +199,29 @@ public class MainActivity extends Activity {
     private Vector<String> hardWords = null;
 
     private void resetWord() {
-        switch (getPreferredDifficulty()) {
-            case EASY:
-                if(easyWords == null) easyWords = getWordsFromAssets("easy.txt");
-                selectedWord = pickRandom(easyWords);
-                break;
-            case MEDIUM:
-                if(mediumWords == null) mediumWords = getWordsFromAssets("medium.txt");
-                selectedWord = pickRandom(mediumWords);
-                break;
-            case HARD:
-                if(hardWords == null) hardWords = getWordsFromAssets("hard.txt");
-                selectedWord = pickRandom(hardWords);
-                break;
+        final boolean useCustomWord = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("useCustomWord", false);
+        if(useCustomWord) {
+            unsanitizedSelectedWord = PreferenceManager
+                    .getDefaultSharedPreferences(this)
+                    .getString("customWord", getString(R.string.NoWordChosen))
+                    .trim();
+        } else {
+            switch (getPreferredDifficulty()) {
+                case EASY:
+                    if(easyWords == null) easyWords = getWordsFromAssets("easy.txt");
+                    unsanitizedSelectedWord = pickRandom(easyWords);
+                    break;
+                case MEDIUM:
+                    if(mediumWords == null) mediumWords = getWordsFromAssets("medium.txt");
+                    unsanitizedSelectedWord = pickRandom(mediumWords);
+                    break;
+                case HARD:
+                    if(hardWords == null) hardWords = getWordsFromAssets("hard.txt");
+                    unsanitizedSelectedWord = pickRandom(hardWords);
+                    break;
+            }
         }
+        selectedWord = sanitize(unsanitizedSelectedWord);
         word = createEmptyWord(selectedWord.length());
 
         textView.setText(word);
@@ -160,8 +237,6 @@ public class MainActivity extends Activity {
     }
 
     private enum WaterLevel { L0, L1, L2, L3, L4, L5, L6, L7, L8, LOSE, WIN};
-
-    private WaterLevel currentWaterLevel = WaterLevel.L0;
 
     private void resetSwimmer() {
         currentWaterLevel = WaterLevel.L0;
@@ -202,8 +277,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean letterTouched = false;
-
     public void letterClicked(final View view) {
 
         if(getGameState() != GameState.ACTIVE) {
@@ -236,18 +309,20 @@ public class MainActivity extends Activity {
             case WON:
                 currentWaterLevel = WaterLevel.WIN;
                 // play won sound
-                if(!mute) winMediaPlayer.start();
+                if(!isMute()) winMediaPlayer.start();
+                // show dialog
+                showDialogWon();
                 break;
             case LOST:
                 // play lost sound
-                if(!mute) bubblesMediaPlayer.start();
+                if(!isMute()) bubblesMediaPlayer.start();
                 // show dialog
                 showDialogLost();
                 break;
             case ACTIVE:
                 // play key sound
-                if(correctLetter) { if(!mute) correctMediaPlayer.start();}
-                else { if(!mute) wrongMediaPlayer.start(); }
+                if(correctLetter) { if(!isMute()) correctMediaPlayer.start();}
+                else { if(!isMute()) wrongMediaPlayer.start(); }
                 break;
         }
 
@@ -352,17 +427,14 @@ public class MainActivity extends Activity {
         }
     }
 
-    private boolean mute;
-
     private boolean isMute() {
-        return mute;
+        return getPreferences(MODE_PRIVATE).getBoolean("mute", true);
     }
 
     public void muteUnmute(View view) {
         final boolean updatedMuteState = !isMute();
         getPreferences(MODE_PRIVATE).edit().putBoolean("mute", updatedMuteState).apply();
         updateMuteIcon(updatedMuteState);
-        this.mute = updatedMuteState;
     }
 
     private void updateMuteIcon(final boolean mute) {
@@ -404,7 +476,7 @@ public class MainActivity extends Activity {
 
     private String pickRandom(final Vector<String> words) {
         final int randomIndex = new Random().nextInt(words.size());
-        return sanitize(words.get(randomIndex));
+        return words.get(randomIndex);
     }
 
     public void showSettings(View view) {
